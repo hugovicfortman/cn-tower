@@ -2,6 +2,8 @@
 
 A 3D rendition of the CN Tower, Toronto Canada.
 
+See live version [here](https://victorfortman.com/thanks/)
+
 Created with [Three.js](https://threejs.org/)
 
 ## How To Run
