@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="content-type" content="text/html"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"/>
+  <title>Let's Go Canada!</title>
+  <base href="/">
+  <meta name="robots" content="index, follow"/>
+  <meta name="revisit-after" content="14days"/>
+  <meta property="og:title" content="Victor Fortman - Engineer | Software Developer | Scholar"/>
+  <meta property="og:description" content="Hi, I am an Engineer and a Software Developer, moving to Canada"/>
+  <meta property="og:image" content="favicon.ico"/>
+  <meta property="og:url" content="https://victorfortman.com/canada"/>
+  <meta name="twitter:card" content="victor_fortman"/>
+  <meta property="og:site_name" content="Victor Fortman .com"/>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body class="bright-mode"><!--dark-mode-->
+  <div id="scenery" class="quite-blurred" style="z-index:-1;display:none;"></div>
+  <div id="backdrop" class="quite-blurred dark"></div>
+  <div class="wrapper">
+    <div class="banner">
+      <header>Thank You!!!</header>
+      <p>
+        Enjoy a 3D rendition of the CN Tower overlooking the Toronto Waterfront, Ontario, Canada.
+      </p>
+    </div>
+    <div class="info">
+      <table>
+        <tbody>
+          <tr>
+            <th colspan="2" class="text-center">Made with ❤ using three.js</th>
+          </tr>
+          <tr>
+            <th>Based On</th>
+            <td>CN Tower</td>
+          </tr>
+          <tr>
+            <th>Photographer</th>
+            <td><a class="lnk lnk-yellow" href="https://www.pexels.com/@nextvoyage" referrerpolicy="no-referrer" target="_blank" title="Nextvoyage on Pexels">Nextvoyage</a></td>
+          </tr>
+          <tr>
+            <th>Image Source</th>
+            <td><a class="lnk lnk-yellow" href="https://www.pexels.com/" referrerpolicy="no-referrer" target="_blank" title="Free Stock Photos">Pexels</a></td>
+          </tr>
+          <tr>
+            <th colspan="2" class="text-center"><a class="lnk lnk-yellow" href="https://github.com/hugovicfortman/cn-tower" referrerpolicy="no-referrer" target="_blank" title="GitHub">View Source</a></th>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+    <style type="text/css">
+      #scenery{
+        width:100%;
+        height: 100vh;
+        position:fixed;
+        top:0;
+        left:0;
+      }
+      .wrapper{
+        display:flex;
+        justify-content:center;
+      }
+      .banner{
+        text-align:center;
+        margin-top:calc(1vh + 20px);
+        font-family:Arial, Helvetica, sans-serif;
+        color: #222;
+        background-color:rgba(250, 250, 250, 0.7);
+        padding:25px;
+        padding-bottom:10px;
+      }
+      .banner > header{
+        font-size: calc(72px);
+        font-weight:bold;
+      }
+      .banner > p{
+        font-size: calc(20px);
+      }
+      .banner > .lead{
+        font-size: calc(24px);
+      }
+      .interest-form{
+        background-color:rgba(70,70,70,0.9);
+        padding:10px;
+        text-align:left;
+        width:320px;
+        margin:auto;
+      }
+      .form-inner{
+        border:1px dashed gray;
+        padding: 10px 5px;
+        color:#efefef;
+      }
+      .form-header{
+        width:100%;
+        text-align:center;
+      }
+      .form-field{
+        padding: 10px 5px;
+      }
+      .form-field label{
+        font-size:small;
+      }
+      #email-guarantee{
+        display:inline;
+      }
+      #email-guarantee .inner{
+        transform:scale(0,0);
+        color:transparent;
+        overflow:hidden;
+        padding:0px;
+        font-size:70%;
+        height:0px;
+        transition:all 0.5s ease;
+      }
+      #email-guarantee.showing .inner{
+        background-color:#222;
+        padding:5px;
+        height:auto;
+        transform:scale(1,1);
+        color:inherit;
+        overflow:initial;
+      }
+      .text-field{
+        padding: 5px;
+        min-width:275px;
+        color: #222222;
+      }
+      .lnk{
+        text-decoration:none;
+        cursor:pointer;
+      }
+      .lnk:hover{
+        text-decoration:underline;
+      }
+      .lnk-yellow{
+        color: #eebb33;
+      }
+      h1, h2, h3, h4, h5{
+        margin: 10px;
+      }
+      .btn-blue{
+        background-color:#5577dd;
+        border-radius:4px;
+        padding:5px 10px; 
+        border: 1px solid #4477cc;
+        display:block;
+        color:#efefef;
+        font-weight:bold;
+        width:290px;
+      }
+      .active .hide-active,
+      :not(.active) .show-active{
+        display:none;
+      }
+      .active .show-active{
+        display:initial;
+      }
+      .info{
+        position:absolute;
+        bottom:5px;
+        right:5px;
+        padding:10px;
+        background-color:rgba(50,50,50, 0.8);
+        color:#dedede;
+      }
+      .info table{
+        font-size:x-small;
+        text-align:left;
+      }
+      .text-center{
+        text-align:center;
+      }
+    </style>
+  </div>
+  <!--Three.js Dependencies-->
+  <script type="text/javascript" src="assets/threejs/three.js"></script>
+  <script type="text/javascript" src="assets/threejs/Detector.js"></script>
+  <script type="text/javascript" src="assets/threejs/Mirror.js"></script>
+  <script type="text/javascript" src="assets/threejs/WaterShader.js"></script>
+  <!--Shaders-->
+  <script type="x-shader/x-vertex" id="grass_vertexshader">
+
+    attribute float time;
+
+    uniform float globalTime;
+    uniform vec3 effector;
+    uniform vec2 uvScale;
+
+    varying vec2 vUv;
+    varying vec3 vNormal;
+    varying float fShine;
+
+    void main() {
+
+      vNormal = normal;
+
+      vec3 pos = position; 
+
+      fShine = 1.8;
+
+      if (pos.y > 1.0) {
+
+        float localTime = time + globalTime;
+
+        vec3 dif = pos - effector;
+
+        float distance = dif.x * dif.x + dif.z * dif.z;
+        
+        float invDistance = max(0.0, 10000.0-distance) / 800.0;
+        float minDistance = min( 8.0, invDistance );
+        fShine = 1.0 + (invDistance*0.22);
+        
+        float angle = atan(dif.x, dif.z);
+
+        pos.x += sin(angle)*(minDistance);
+        pos.z += -1.0 * cos(angle)*(minDistance);
+
+        pos.x += sin(localTime*1.5)*2.0; 
+        pos.z += cos(localTime*0.5)*2.0; 
+
+      }
+
+              vUv = uvScale * uv;
+
+      vec4 mvPosition = modelViewMatrix * vec4( pos, 1.0 );
+
+      gl_Position = projectionMatrix * mvPosition;
+
+    }
+
+  </script>
+  <script type="x-shader/x-fragment" id="grass_fragmentshader">
+
+  uniform vec3 color;
+  uniform sampler2D texture;
+        
+  varying vec3 vNormal;
+  varying vec2 vUv;
+  varying float fShine;
+
+  const float threshold = 0.05;
+
+  void main() {
+
+    vec4 textureColor = texture2D(texture, vec2(vUv.s, vUv.t));
+
+    if (textureColor[0] < threshold && textureColor[1] < threshold && textureColor[2] < threshold) {
+      discard;
+    } else {
+      float depth = gl_FragCoord.z / gl_FragCoord.w;
+      float near = 500.0;
+      float far = 1000.0;
+      float depthcolor = 1.0 - smoothstep( near, far, depth );
+
+      vec3 light = vec3(0.0,128.0,128.0);
+      light = normalize(light);
+      float d = max(0.8,dot(vNormal, light))*0.8;
+      
+      gl_FragColor = vec4((textureColor.xyz * d * fShine) * depthcolor, 1.0);
+    }
+
+  }
+
+  </script>
+  <script type="x-shader/x-vertex" id="vertexshader2">
+
+    attribute vec3 basepos;
+    attribute vec3 customColor;
+
+    uniform float globalTime;
+    uniform vec3 effector;
+
+    varying vec3 vColor;
+    varying vec3 vNormal;
+    varying float fShine;
+
+    void main() {
+
+      vColor = customColor;
+      vNormal = normal;
+
+      vec3 pos = position; 
+      fShine = 1.0;
+
+      vec3 dif = basepos - effector;
+
+      float distance = dif.x * dif.x + dif.z * dif.z;
+      
+      float invDistance = max(0.0, 10000.0-distance) / 500.0;
+      float minDistance = min( 8.0, invDistance );				
+      fShine = 1.0 + (invDistance*0.125);
+
+      float angle = atan(dif.x, dif.z);
+
+      pos.x += sin(angle)*(minDistance*(pos.y*0.015));
+      pos.z += cos(angle)*(minDistance*(pos.y*0.015));
+
+      pos.x += sin(globalTime*1.5)*pos.y*0.07; 
+      pos.z += cos(globalTime*0.5)*pos.y*0.07; 
+
+      vec4 mvPosition = modelViewMatrix * vec4( pos, 1.0 );
+
+      gl_Position = projectionMatrix * mvPosition;
+
+    }
+
+  </script>
+  <script type="x-shader/x-fragment" id="fragmentshader2">
+        
+    varying vec3 vColor;
+    varying vec3 vNormal;
+    varying float fShine;
+
+    void main() {
+
+      float depth = gl_FragCoord.z / gl_FragCoord.w;
+      float near = 150.0;
+      float far = 400.0;
+      float depthcolor = 1.0 - smoothstep( near, far, depth );
+
+      vec3 light = vec3(0.0,0.8,-1.0);
+      light = normalize(light);
+      float d = max(0.4,dot(vNormal, light))*1.6;
+
+      gl_FragColor = vec4( (vColor.xyz * d * fShine) * depthcolor, 1.0 );
+
+    }
+
+  </script>
+  <!--Three.js Rendering-->
+  <script type="text/javascript">
+      let moveForward = false;
+      let moveBackward = false;
+      let moveRight = false;
+      let moveLeft = false;
+      let canJump = false;
+      const textureSrc = 'assets/static/images/scenery/';
+      const scenery = {
+        container : document.getElementById('scenery'),
+        viewer : {
+          rho : 0,
+          phi: 0,
+          x:0,
+          y:50,
+          z:-200
+        },
+        mouse : {
+          X:0,
+          Y:0,
+          Xpercent:0,
+          Ypercent:0
+        },
+        components : {},
+        world : {
+                    sky : {
+                        rotation : Math.PI/(1024 * 16),
+                        TextureImg : textureSrc + 'hdSky.png'
+                    },
+                    sun : {
+                      TextureImg : {
+                        flare : textureSrc + 'flare.png',
+                        lensFlare: textureSrc + 'lens-flare.png'
+                      }
+                    },
+                    grass : {
+                      TextureImg : {
+                        near : textureSrc + 'thingrass.png',
+                        far : textureSrc + 'far_grass.png'
+                      }
+                    },
+                    ground:{
+                      TextureImg : textureSrc + '9451-diffuse.jpg'
+                    },
+                    ocean:{
+                      TextureImg : textureSrc + 'waternormals.jpg'
+                    },
+                    horizon:{
+                      TextureImg : textureSrc + 'cn.png'
+                    }
+                },
+                time : {
+                    prevTime : performance.now()
+                }
+      };
+
+      let velocity = new THREE.Vector3();
+      let direction = new THREE.Vector3();
+      let vertex = new THREE.Vector3();
+      let color = new THREE.Color();
+
+      let objects = [];
+
+      // Initialize required threejs components...
+      const init = () => {
+          const scene = new THREE.Scene();
+          const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 10000 );
+          const renderer = new THREE.WebGLRenderer( { antialias: true } );
+          const raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3( 0, -1, 0), 0, 10);
+          renderer.setPixelRatio( window.devicePixelRatio );
+          renderer.setSize(window.innerWidth, window.innerHeight);
+          renderer.setClearColor(0xDDDDDD, 1);
+          scenery.container.appendChild(renderer.domElement);
+          camera.position.z = scenery.viewer.z;
+          camera.position.y = scenery.viewer.y;
+
+          const targetCamera = new THREE.Vector3().clone(scene.position);
+          camera.lookAt(targetCamera);
+                  scene.add( camera );
+
+
+                  firstPaint(scene, camera, renderer);
+                  return { scene, camera, renderer, raycaster, targetCamera };
+              };
+
+      // First paint of scenery...
+      const firstPaint = (scene, camera, renderer) => {
+          let skyGeometry = new THREE.SphereGeometry(4800, 32, 32);//, 0, Math.PI * 2, 0, Math.PI * 23/48);
+          let groundGeometry = new THREE.PlaneGeometry(6000, 400);//
+          //SphereGeometry(radius : Float, widthSegments : Integer, heightSegments : Integer, phiStart : Float, phiLength : Float, thetaStart : Float, thetaLength : Float)
+          
+          let skyMaterial = new THREE.MeshBasicMaterial({map: new THREE.TextureLoader().load(scenery.world.sky.TextureImg ), side: THREE.DoubleSide});
+          let groundTexture = new THREE.TextureLoader().load( scenery.world.ground.TextureImg );
+          
+          groundTexture.wrapS = THREE.RepeatWrapping;
+          groundTexture.wrapT = THREE.RepeatWrapping;
+          groundTexture.repeat.x = 100;
+          groundTexture.repeat.y = 100;
+          let groundMaterial = new THREE.MeshBasicMaterial({map: groundTexture, side: THREE.FrontSide});
+          
+          let skySphere = new THREE.Mesh( skyGeometry, skyMaterial );
+          let groundPlane = new THREE.Mesh( groundGeometry, groundMaterial );
+          groundPlane.rotation.x = Math.PI/2 ;
+          groundPlane.rotation.y = -Math.PI ;
+          groundPlane.receiveShadow = true;
+          groundPlane.position.set(0, 5, 0);
+
+
+          // Add components to the component manifest...
+          scenery.world.sky.Sphere = skySphere;
+          scenery.world.groundPlane = groundPlane;
+
+          createFog(scene);
+          createSun(scene);
+          createGrass(scene, renderer);
+          createOcean(scene, renderer, camera);
+          createHorizon(scene);
+
+          scene.add( skySphere );
+          scene.add( groundPlane );
+      };
+
+      const createFog = (scene) => {
+        // Add fog to make edges less sharp...
+        const color = 0xD0DEFE;
+        const near = 150;
+        const far = 6000;
+        scene.fog = new THREE.Fog(color, near, far);
+      };
+      const createSun = (scene) => {
+        // Add sun to the center of the sky...
+        const sun = new THREE.Object3D();
+        const sunGeometry = new THREE.SphereGeometry(128, 64, 64);
+        const sunMaterial = new THREE.MeshBasicMaterial({ color:0xFFFF00, side: THREE.DoubleSide });
+        const sunSphere = new THREE.Mesh(sunGeometry, sunMaterial);
+        scenery.world.sun.self = sun;
+        //sun.add(sunSphere);
+
+        const flareSpriteMap = new THREE.TextureLoader().load( scenery.world.sun.TextureImg.flare );
+        const flareSpriteMaterial = new THREE.SpriteMaterial({ map: flareSpriteMap, color: 0xFFFFEE, blending: THREE.AdditiveBlending });
+
+        const lensFlareSpriteMap = new THREE.TextureLoader().load( scenery.world.sun.TextureImg.lensFlare );
+        const lensFlareSpriteMaterial = new THREE.SpriteMaterial({ map: lensFlareSpriteMap, color: 0xFFFFEE, blending: THREE.AdditiveBlending });
+
+        const flare0 = new THREE.Sprite( flareSpriteMaterial );
+        flare0.scale.set( 2048, 2048, 1 );
+        flare0.opacity = 0.3;
+        sun.add( flare0 );
+
+        const flare1 = new THREE.Sprite( flareSpriteMaterial );
+        flare1.scale.set( 512, 512, 1 );
+        flare1.opacity = 0.1;
+        flare1.rotation = Math.PI*0.5;
+        sun.add( flare1 );
+
+        const flare2 = new THREE.Sprite( lensFlareSpriteMaterial );
+        flare2.scale.set( 512, 512, 1 );
+        flare2.opacity = 0.1;
+        flare2.rotation = Math.PI*0.5;
+
+        sun.position.set(0, 3000, 3000);
+        scene.add(sun);
+        flare2.position.set(-100, 500, 500);
+        scene.add( flare2 );
+        scenery.world.sun.flare0 = flare0;
+        scenery.world.sun.flare1 = flare1;
+        scenery.world.sun.flare2 = flare2;
+
+      };
+      const createGrass = (scene, renderer) => {
+                
+        let planeGeometry = new THREE.PlaneGeometry(600, 30, 14, 1);
+
+        for (var i = 0; i < planeGeometry.vertices.length; i++) {
+          planeGeometry.vertices[i].z = Math.sin(planeGeometry.vertices[i].x)*20;
+        };
+
+        planeGeometry.applyMatrix( new THREE.Matrix4().setPosition( new THREE.Vector3( 0, 15, 0 ) ) );
+        
+        let grassMap = new THREE.TextureLoader().load( scenery.world.grass.TextureImg.near );
+        grassMap.wrapS = THREE.RepeatWrapping;
+        const maxAnisotropy = renderer.getMaxAnisotropy();
+        grassMap.premultiplyAlpha = true;
+        grassMap.anisotropy = maxAnisotropy;
+
+        let attributes = {
+
+          time:		 { type: 'f', value: [] }
+          
+        };
+
+        const uniforms = {
+
+          color:      { type: "c", value: new THREE.Color( 0xFF00FF ) },
+          texture:    { type: "t", value: grassMap },
+          globalTime:	{ type: "f", value: 0.0 },
+          uvScale: 	{ type: "v2", value: new THREE.Vector2( 16.0, 1.0 ) },
+          effector: 	{ type: "v3", value: new THREE.Vector3() }
+        };
+
+        const grassMaterial = new THREE.ShaderMaterial( {
+
+          uniforms: 		uniforms,
+          vertexShader:   document.getElementById( 'grass_vertexshader' ).textContent,
+          fragmentShader: document.getElementById( 'grass_fragmentshader' ).textContent,
+          wireframe: 		false,
+          side: 			THREE.DoubleSide,
+          
+        });
+
+                // placing the real grass...
+        {
+          var geometry = new THREE.Geometry();
+              // geometry.addAttribute('time', new BufferAttribute(attributes));
+          var x = 0;
+          var z = 0;
+          var rot = (Math.PI*2)/3;
+
+          var mesh = new THREE.Mesh(planeGeometry);
+          
+            for (var i = 0; i < 297; i++) { //1800
+              mesh.rotation.y = (i%3 * rot) + Math.random()-0.5;
+              mesh.position.set(x*50 -1500 , 0, z*80 -180 );
+              
+              mesh.position.x += Math.random()*20 - 10;
+              mesh.position.z += Math.random()*20 - 10;
+
+              mesh.scale.y = 1.1-Math.random()*0.4;
+              if (i%3 == 2) {
+                  ++x;
+              }
+              if (x == 65) {
+                  x = 0;
+                  ++z;
+              }
+
+              mesh.updateMatrix();
+              geometry.merge(mesh.geometry, mesh.matrix);
+            }
+          
+            // in front of camera
+            for (var i = 0; i < 10; i++) {
+                var z = i*10;
+                mesh.position.set(Math.random()*50 - 25 , 0, -(100+z) );
+                mesh.rotation.y = Math.random()*0.2 - 0.1;
+                // THREE.GeometryUtils.merge(geometry, mesh);
+                mesh.updateMatrix();
+                geometry.merge(mesh.geometry, mesh.matrix);
+            }
+
+            var vertices = geometry.vertices;
+            var values_time = attributes.time.value;
+
+            for( var v = 0; v < vertices.length; v+=planeGeometry.vertices.length ) {
+
+                for (var j = v; j < v+planeGeometry.vertices.length; j++) {
+                    values_time[j] = v/vertices.length;
+                };
+
+            }
+
+            var planes = new THREE.Mesh(geometry, grassMaterial);
+            planes.matrixAutoUpdate = false;
+            scene.add(planes);
+          }
+
+        scenery.world.grass.uniforms = uniforms;
+      };
+      const createOcean = (scene, renderer, camera) => {
+        
+				let waterNormals = new THREE.TextureLoader().load( scenery.world.ocean.TextureImg );
+				waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
+
+				let water = new THREE.Water( renderer, camera, scene, {
+					textureWidth: 512,
+					textureHeight: 512,
+					waterNormals: waterNormals,
+					alpha: 	1.0,
+					sunDirection: scenery.world.sun.self.position.clone().normalize(),
+					sunColor: 0xffffff,
+					waterColor: 0x001e0f,
+					distortionScale: 50.0
+				} );
+
+        let parameters = {
+          width: 100,
+          height: 10
+        };
+
+				let mirrorMesh = new THREE.Mesh(
+					new THREE.PlaneBufferGeometry( parameters.width * 250, parameters.height * 100 ),
+					water.material
+				);
+
+        mirrorMesh.add( water );
+        mirrorMesh.position.set(0, 0, 500);
+        mirrorMesh.rotation.x = - Math.PI * 0.5;
+        scenery.world.ocean.water = water;
+				scene.add( mirrorMesh );
+      };
+      const createHorizon = (scene) => {
+        
+        // once we're beyond eyeshot, we can render the horizon...
+        {
+          let horizonTexture = new THREE.TextureLoader().load(scenery.world.horizon.TextureImg);
+          let fakeGrassTexture = new THREE.TextureLoader().load( scenery.world.grass.TextureImg.far );
+          fakeGrassTexture.wrapS = THREE.RepeatWrapping;
+          fakeGrassTexture.wrapT = THREE.RepeatWrapping;
+          fakeGrassTexture.repeat.x = 512;
+          let fakeGrassMaterial = new THREE.MeshBasicMaterial({ map: fakeGrassTexture, transparent: true, side: THREE.DoubleSide });
+          let horizonMaterial = new THREE.MeshBasicMaterial({ map: horizonTexture, transparent: true, side: THREE.BackSide });
+          let horizonGeometry = new THREE.PlaneGeometry(4000, 500); // 16384, 300
+          let horizon = new THREE.Mesh( horizonGeometry, horizonMaterial );
+          horizon.position.set(0, 225, 900);
+          scenery.world.horizon.self = horizon;
+          scene.add(horizon);
+        }
+      };
+
+
+      // Maintains size of renderer...
+      const onWindowResize = () => {
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        scenery.components.renderer.setSize( width, height );
+        scenery.components.camera.aspect = (width/height);
+        scenery.components.camera.updateProjectionMatrix();
+      };
+      const onKeyDown = ( event ) => {
+          switch ( event.keyCode ) {
+              case 32: // space
+                  if ( canJump === true ) velocity.y += 350;
+                  canJump = false;
+                  break;
+              case 38: // up
+              case 87: // w
+                  moveForward = true;
+                  break;
+              case 37: // left
+              case 65: // a
+                  moveLeft = true;
+                  break;
+              case 40: // down
+              case 83: // s
+                  moveBackward = true;
+                  break;
+              case 39: // right
+              case 68: // d
+                  moveRight = true;
+                  break;
+          }
+      };
+      const onKeyUp = ( event ) => {
+          switch ( event.keyCode ) {
+              case 38: // up
+              case 87: // w
+                  moveForward = false;
+                  break;
+              case 37: // left
+              case 65: // a
+                  moveLeft = false;
+                  break;
+              case 40: // down
+              case 83: // s
+                  moveBackward = false;
+                  break;
+              case 39: // right
+              case 68: // d
+                  moveRight = false;
+                  break;
+          }
+      };
+      const onMouseDown = ( event ) => { 
+        event.preventDefault();
+      };
+      const onMouseMove = ( event ) => {
+        
+        var windowHalfX = window.innerWidth >> 1;
+        var windowHalfY = window.innerHeight >> 1;
+
+        scenery.mouse.X = ( event.clientX - windowHalfX );
+        scenery.mouse.Y = ( event.clientY - windowHalfY );
+
+        scenery.mouse.Xpercent = scenery.mouse.X/(window.innerWidth/2);
+        scenery.mouse.Ypercent = scenery.mouse.Y/(window.innerHeight/2);
+
+      };
+      const onTouchStart = ( event ) => { 
+        event.preventDefault();
+      };
+      const onTouchMove = ( event ) => { 
+        event.preventDefault();
+        onMouseMove(event.touches[0]);
+      };
+      const onTouchEnd = ( event ) => { 
+        event.preventDefault();
+      };
+
+      // Updates scene...
+      const update = () => {
+                // Time Calculations...
+        let time = performance.now();
+        let delta = time - scenery.time.prevTime;
+        scenery.time.prevTime = time;
+        // Spin the world...
+        let skySphere = scenery.world.sky.Sphere;
+        skySphere.rotation.y += scenery.world.sky.rotation;
+        // Animate the solar flare effect...
+        let flare0 = scenery.world.sun.flare0;
+        let flare1 = scenery.world.sun.flare1;
+        flare0.material.rotation += delta*0.00002;
+        flare1.material.rotation -= delta*0.000024;
+
+        flare1.material.opacity = 0.5+Math.abs(Math.sin(time/36000))*0.24;
+        // Animate the water...
+        let water = scenery.world.ocean.water;
+				water.material.uniforms.time.value += 1.0 / 60.0;
+				water.render();
+
+                // wave the grass...
+                let uniforms = scenery.world.grass.uniforms;
+        if (uniforms) {
+          uniforms.globalTime.value += delta * 0.0012;
+          uniforms.effector.value = scenery.world.sun.self.position;
+          
+          /*if (uniforms2) {
+            uniforms2.globalTime.value = uniforms.globalTime.value;
+            uniforms2.effector.value = uniforms.effector.value;
+          }*/
+
+        }
+        // Move viewer with mouse...
+        scenery.components.targetCamera.x += (-scenery.mouse.Xpercent*100 - scenery.components.targetCamera.x)/10;
+        scenery.components.targetCamera.y += (-(scenery.mouse.Ypercent*100)+40 - scenery.components.targetCamera.y)/10;
+
+        scenery.components.camera.lookAt(scenery.components.targetCamera);
+      };
+
+      // Draws on Scene...
+      const render = () => {
+          scene = scenery.components.scene;
+          camera = scenery.components.camera;
+          renderer = scenery.components.renderer;
+          renderer.render( scene, camera );
+      };
+
+      // Game Loop Logic [update, render, repeat]...
+      const gameLoop = () => {
+          requestAnimationFrame( gameLoop );
+
+          update();
+          render();
+      };
+      
+      // Startup...
+      if(Detector.webgl)
+      {
+          scenery.components = init();
+          gameLoop();
+      }else{
+          // If WebGL is not supported...
+          var warning = Detector.getWebGLErrorMessage();
+          scenery.container.appendChild(warning);
+      }
+
+      
+      // Loading...
+      THREE.DefaultLoadingManager.onProgress = ( item, loaded, total ) => {
+          // All textures are done loading when loaded === total...
+          if(loaded === total)
+          {
+            removeDarkMode();
+          }
+      };
+      document.addEventListener( 'touchstart', onTouchStart, false );
+      document.addEventListener( 'touchmove', onTouchMove, false );
+      document.addEventListener( 'touchend', onTouchEnd, false );
+      document.addEventListener( 'mousedown', onMouseDown, false );
+      document.addEventListener( 'mousemove', onMouseMove, false );
+      document.addEventListener( 'keydown', onKeyDown, false );
+      document.addEventListener( 'keyup', onKeyUp, false );
+      window.addEventListener('resize', onWindowResize, false);
+  </script>
+  <!--Custom-->
+  <script type="text/javascript">
+    window.addEventListener('load', ()=>{
+    // Cause clicking on form input fields to focus on them.
+    // this was affected by three.js controls...
+      document.querySelectorAll('.form-field input').forEach((a)=>{
+        a.addEventListener('click', ()=>{ a.focus(); });
+      });
+
+      // Email guarantee toggle...
+      document.querySelectorAll('.email-gt-toggle').forEach((a)=>{
+        a.addEventListener('click', () => {
+          document.getElementById('email-guarantee').classList.toggle('showing');
+          a.classList.toggle('active');
+        });
+      });
+    });
+    window.removeDarkMode = () => {
+      backdrop.classList.remove('dark');
+      scenery.container.style.removeProperty('display');
+    };
+  </script>
+</body>
+</html>
