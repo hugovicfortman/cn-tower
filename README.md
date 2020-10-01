@@ -2,7 +2,11 @@
 
 A 3D rendition of the CN Tower, Toronto Canada.
 
-See live version [here](https://victorfortman.com/thanks/)
+The camera moves along with your mouse.
+
+![CN Tower](https://github.com/hugovicfortman/cn-tower/blob/master/cn-tower.png)
+
+See live version [here](https://victorfortman.com/canada/thanks/)
 
 Created with [Three.js](https://threejs.org/)
 
